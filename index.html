@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mi Casa — Presentación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wall:#4A4F54;      /* fondo: concreto gris */
+  --ink:#FFFFFF;       /* texto */
+  --dark:#23272B;
+  --block:#A3A6AA;     /* block de concreto */
+  --line:#6B7075;      /* sisa */
+  --azul:#FF6B5E;      /* acento rojo */
+  --azul-t:#6A4446;
+  --rosa:#FF6B5E;      /* acento rojo */
+  --rosa-t:#6A4446;
+  --muted:#D3D6D9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+button{font-family:inherit}
+html,body{height:100%;background:var(--wall);overflow:hidden}
+body{font-family:"Avenir Next","Avenir","Nunito Sans",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{flex:none;width:1280px;height:720px;background:var(--wall);position:relative;transform-origin:center center;overflow:hidden}
+.slide{position:absolute;inset:0;padding:56px 64px 96px;display:none}
+.slide.on{display:block}
+@media (prefers-reduced-motion:no-preference){ .slide.on{animation:in .35s ease-out} @keyframes in{from{opacity:0}to{opacity:1}} }
+
+h1,h2{letter-spacing:-0.015em;line-height:1.05}
+h1{font-size:96px;font-weight:850}
+h2{font-size:42px;font-weight:780;max-width:22ch;margin-bottom:28px}
+.lead{font-size:22px;line-height:1.45;max-width:58ch;color:var(--ink)}
+p{font-size:18px;line-height:1.5;max-width:60ch}
+.small{font-size:14px;line-height:1.45;color:var(--muted)}
+.src{position:absolute;left:64px;bottom:70px;font-size:12.5px;color:var(--muted);max-width:110ch}
+.num{font-variant-numeric:tabular-nums}
+.k{font-weight:700}
+.row{display:flex;gap:40px}
+.col{flex:1}
+
+/* ---------- barra de navegación: un muro de blocks ---------- */
+#nav{position:absolute;left:64px;right:64px;bottom:24px;height:30px;display:flex;align-items:center;gap:14px}
+#wall{flex:1;display:flex;gap:4px;height:22px}
+#wall button{flex:1;border:0;background:var(--line);cursor:pointer;border-radius:2px;position:relative}
+#wall button.done{background:var(--block)}
+#wall button.cur{background:var(--azul)}
+#wall button:focus-visible,.arrow:focus-visible,.step:focus-visible,.chip:focus-visible{outline:3px solid var(--rosa);outline-offset:2px}
+#wall button span{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--ink);color:var(--dark);font-size:12.5px;padding:5px 8px;border-radius:3px;opacity:0;pointer-events:none}
+#wall button:hover span,#wall button:focus-visible span{opacity:1}
+.arrow{width:30px;height:30px;border:1.5px solid var(--ink);color:var(--ink);background:transparent;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+.arrow svg{width:14px;height:14px}
+#count{font-size:13px;color:var(--muted);min-width:46px;text-align:right}
+
+/* ---------- portada ---------- */
+.cover h1{margin-top:70px}
+.cover .tag{font-size:13px;color:var(--muted);margin-top:8px}
+.cover .lead{margin-top:34px;max-width:30ch;font-size:26px}
+.cover .by{position:absolute;left:64px;bottom:82px;font-size:15px;line-height:1.5}
+.cover .by b{font-weight:800;}
+.cover svg.house{position:absolute;right:40px;top:40px;width:560px;height:600px}
+
+/* ---------- problema ---------- */
+.stages{display:flex;gap:28px;margin-top:44px;align-items:flex-start}
+.stage{flex:1}
+.stage svg{width:100%;height:190px;display:block}
+.stage .cap{font-size:16px;line-height:1.4;margin-top:12px;border-top:2px solid var(--ink);padding-top:10px}
+.stage.stop .cap{border-color:var(--rosa)}
+
+/* ---------- actores ---------- */
+.actors{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:8px}
+.actor{padding:0 26px;border-left:2px solid var(--line)}
+.actor:first-child{padding-left:0;border-left:0}
+.actor h3{font-size:22px;font-weight:780;margin:16px 0 10px}
+.actor p{font-size:16.5px}
+.actor svg{width:44px;height:44px}
+.unifier{margin-top:42px;font-size:24px;line-height:1.4;max-width:62ch;padding-left:20px;border-left:6px solid var(--rosa)}
+
+/* ---------- barras ---------- */
+.bars{margin-top:6px}
+.bar{display:grid;grid-template-columns:190px 1fr 90px;align-items:center;gap:16px;height:46px}
+#growbars .bar{grid-template-columns:170px 1fr 70px 330px;height:52px}
+.bar .lbl{font-size:18px}
+.bar .trk{height:22px;position:relative}
+.bar .fill{height:100%;background:var(--block);border-radius:2px}
+.bar.hi .fill{background:var(--azul)}
+.bar.hi .lbl,.bar.hi .val{font-weight:750}
+.bar .val{font-size:18px}
+.bar .note{font-size:14px;line-height:1.3;color:var(--muted)}
+
+/* ---------- mockup ---------- */
+.mock{display:grid;grid-template-columns:290px 230px 1fr;gap:34px;margin-top:-6px}
+.phone{--ink:#23272B;--muted:#5E6368;--azul:#C8102E;--azul-t:#FBE5E7;--line:#D9DBD7;color:var(--ink);width:290px;height:520px;border:10px solid var(--ink);border-radius:36px;background:#fff;overflow:hidden;display:flex;flex-direction:column}
+.ph-top{background:var(--azul);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.ph-top .av{width:30px;height:30px;border-radius:50%;background:#fff;display:grid;place-items:center}
+.ph-top b{font-size:15px;}
+.ph-top small{display:block;font-size:11px;opacity:.85}
+.ph-body{flex:1;background:#EEF1EE;padding:12px 10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.msg{max-width:88%;background:#fff;border-radius:10px;padding:8px 10px;font-size:13px;line-height:1.35}
+.msg.me{align-self:flex-end;background:var(--azul-t)}
+.audio{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--azul);font-weight:650}
+.audio i{width:22px;height:22px;border-radius:50%;background:var(--azul);display:grid;place-items:center}
+.audio .wave{flex:1;height:14px;background:repeating-linear-gradient(90deg,var(--azul) 0 2px,transparent 2px 5px);opacity:.45;border-radius:2px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tile{background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:6px 4px;text-align:center;font-size:11px;line-height:1.2}
+.tile svg{width:34px;height:28px;display:block;margin:0 auto 3px}
+.tile.sel{border-color:var(--azul);background:var(--azul-t)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:4px 9px;font-size:11.5px}
+.chip.sel{border-color:var(--azul);background:var(--azul-t);font-weight:650}
+.total{font-size:26px;font-weight:800;color:var(--ink)}
+.lines{width:100%;font-size:11.5px;border-collapse:collapse}
+.lines td{padding:2px 0;border-bottom:1px solid #EEF1EE}
+.lines td:last-child{text-align:right}
+.btn{display:block;width:100%;text-align:left;border:1.5px solid var(--azul);color:var(--azul);background:#fff;border-radius:8px;padding:7px 9px;font-size:12.5px;font-weight:650}
+.btn.fill{background:var(--azul);color:#fff}
+
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{text-align:left;border:0;background:transparent;color:var(--ink);cursor:pointer;padding:10px 12px 10px 14px;border-left:4px solid var(--line);font:inherit}
+.step b{display:block;font-size:13px;color:var(--muted);font-weight:600}
+.step span{font-size:17px;font-weight:700;line-height:1.25}
+.step.on{border-left-color:var(--azul);background:var(--azul-t)}
+.step.on b{color:var(--ink)}
+.illu{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.4}
+
+.flow svg{width:100%;height:auto;display:block}
+.flow .nd rect{fill:var(--wall);stroke:var(--line);stroke-width:2;transition:all .25s}
+.flow .nd text{font-size:15px;font-weight:700;fill:var(--muted);transition:fill .25s}
+.flow .nd .sub{font-size:12px;font-weight:500}
+.flow .nd.on rect{stroke:var(--azul);fill:var(--azul-t)}
+.flow .nd.on text{fill:var(--ink)}
+.flow .nd.core rect{fill:var(--ink);stroke:var(--ink)}
+.flow .nd.core text{fill:var(--dark)}
+.flow .eg path{fill:none;stroke:var(--line);stroke-width:2.5;transition:stroke .25s}
+.flow .eg.on path{stroke:var(--azul);stroke-width:3}
+.flow .eg .dot{fill:var(--azul);opacity:0}
+.flow .eg.on .dot{opacity:1}
+.caption{border-top:2px solid var(--ink);padding-top:12px;margin-top:6px}
+.caption h4{font-size:19px;font-weight:760;margin-bottom:6px}
+.caption p{font-size:15.5px;line-height:1.45}
+
+/* ---------- tablas ---------- */
+table.grid{width:100%;border-collapse:collapse;font-size:16px}
+table.grid th{text-align:left;font-size:13.5px;color:var(--muted);font-weight:600;padding:0 14px 10px 0;border-bottom:2px solid var(--ink)}
+table.grid td{padding:13px 14px 13px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.35}
+table.grid td:first-child{font-weight:750;white-space:nowrap}
+
+/* ---------- fases ---------- */
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:40px;position:relative}
+.phase{padding:18px 20px 0 0}
+.phase .bk{height:120px;border-radius:3px;background:var(--line);display:flex;align-items:flex-end;padding:0 0 8px 12px;font-weight:800;font-size:20px;margin-right:8px}
+.phase.money .bk{background:var(--azul);color:var(--dark)}
+.phase h3{font-size:22px;font-weight:760;margin:18px 0 8px}
+.phase p{font-size:16px}
+.phase .gate{margin-top:16px;font-size:14px;line-height:1.4;color:var(--muted);border-top:1.5px dashed var(--block);padding-top:8px;margin-right:16px}
+
+/* ---------- gantt ---------- */
+.gantt{position:relative}
+.g-row{display:grid;grid-template-columns:200px 1fr;align-items:center;height:34px}
+.g-row .t{font-size:15px}
+.g-row .tr{position:relative;height:100%}
+.g-row .b{position:absolute;top:10px;height:14px;border-radius:7px;background:var(--line);border:1.5px solid var(--block)}
+.g-row.hi .b{background:var(--azul-t);border-color:var(--azul)}
+.g-row.ms .b{width:14px!important;height:14px;transform:rotate(45deg) translateX(-50%);border-radius:2px;background:var(--azul);border-color:var(--azul)}
+.g-row.hi .t,.g-row.ms .t{font-weight:700}
+.g-ax{display:grid;grid-template-columns:200px 1fr;font-size:12px;color:var(--muted)}
+.g-ax .tk{position:relative;height:18px}
+.g-ax .tk span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.g-ax .tk span:last-child{transform:translateX(-100%)}
+.money-box .big{font-size:52px;font-weight:850;line-height:1}
+.money-box ul{list-style:none;margin-top:18px}
+.money-box li{display:flex;justify-content:space-between;font-size:15.5px;padding:7px 0;border-bottom:1px solid var(--line)}
+
+/* ---------- datos digitales ---------- */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:22px 30px}
+.stat .v{font-size:40px;font-weight:850;line-height:1}
+.stat .d{font-size:15px;margin-top:6px;line-height:1.4;max-width:30ch}
+.stat.warn .v{color:var(--rosa)}
+ol.ch{list-style:none;counter-reset:c}
+ol.ch li{counter-increment:c;position:relative;padding:0 0 18px 46px;font-size:17px;line-height:1.4}
+ol.ch li::before{content:counter(c);position:absolute;left:0;top:-2px;width:30px;height:30px;border-radius:3px;background:var(--azul);color:var(--dark);font-weight:800;display:grid;place-items:center;font-size:15px}
+ol.ch li b{display:block;font-size:18px}
+.callout{border-left:6px solid var(--azul);padding-left:18px;font-size:19px;line-height:1.4;margin-top:6px;max-width:44ch}
+
+.princ{display:grid;grid-template-columns:repeat(2,1fr);gap:26px 46px;margin-top:4px}
+.princ h3{font-size:21px;font-weight:760;margin-bottom:6px}
+.princ p{font-size:16.5px}
+
+.path{display:flex;gap:0;margin-top:8px}
+.path div{flex:1;padding:16px 18px 16px 0;border-top:6px solid var(--line);margin-right:8px}
+.path div.now{border-color:var(--azul)}
+.path b{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.path span{font-size:17px;font-weight:700;line-height:1.3}
+.ask{margin-top:34px;font-size:30px;font-weight:800;line-height:1.15;max-width:30ch}
+
+/* ---------- celular (marco de menos de 720 px de ancho) ---------- */
+body.m #viewport{display:block}
+body.m #stage{width:100%;height:100%;transform:none;flex:none}
+body.m .slide{padding:28px 20px 96px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+body.m h1{font-size:60px}
+body.m h2{font-size:30px;margin-bottom:20px}
+body.m .lead{font-size:18px}
+body.m p{font-size:16px}
+body.m .row{flex-direction:column;gap:26px!important}
+body.m .row>*{width:auto!important;flex:none!important}
+body.m .row>svg{width:100%!important;height:auto!important}
+body.m .src{position:static;margin-top:24px}
+body.m .cover h1{margin-top:20px}
+body.m .cover .lead{font-size:20px}
+body.m .cover svg.house{position:static;width:100%;height:auto;margin-top:20px}
+body.m .cover .by{position:static;margin-top:16px}
+body.m .stages{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+body.m .stage svg{height:120px}
+body.m .stage .cap{font-size:14px}
+body.m .actors{grid-template-columns:1fr;gap:22px}
+body.m .actor{padding:18px 0 0;border-left:0;border-top:2px solid var(--line)}
+body.m .actor:first-child{padding-top:0;border-top:0}
+body.m .unifier{font-size:19px;margin-top:28px}
+body.m .bar{grid-template-columns:116px 1fr 74px;gap:10px;height:40px}
+body.m .bar .lbl,body.m .bar .val{font-size:15px}
+body.m #growbars .bar{grid-template-columns:116px 1fr 56px;height:auto;padding:8px 0;row-gap:4px}
+body.m #growbars .bar .note{grid-column:1/-1}
+body.m .mock{grid-template-columns:minmax(0,1fr);gap:24px;margin-top:0}
+body.m .mock>*{min-width:0}
+body.m .phone{margin:0 auto;height:440px}
+body.m .mock>div:nth-child(2){order:-1}
+body.m .steps{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+body.m .step{flex:0 0 150px;border-left:0;border-top:4px solid var(--line)}
+body.m .step.on{border-top-color:var(--azul)}
+body.m .step span{font-size:15px}
+body.m .flow svg{max-width:100%}
+body.m table.grid,body.m table.grid tbody,body.m table.grid tr,body.m table.grid td{display:block}
+body.m table.grid thead{display:none}
+body.m table.grid tr{padding:14px 0;border-bottom:1px solid var(--line)}
+body.m table.grid td{border:0;padding:3px 0;font-size:15px}
+body.m table.grid td:first-child{font-size:18px;margin-bottom:4px}
+body.m table.grid td:nth-child(3)::before{content:"Paga: ";color:var(--muted)}
+body.m table.grid td:nth-child(4)::before{content:"Métrica: ";color:var(--muted)}
+body.m table.grid td:nth-child(5)::before{content:"Fase: ";color:var(--muted)}
+body.m .phases{grid-template-columns:1fr;gap:26px;margin-top:10px}
+body.m .phase{padding:0}
+body.m .phase .bk{height:46px;margin:0}
+body.m .phase .gate{margin-right:0}
+body.m .g-row,body.m .g-ax{grid-template-columns:128px 1fr}
+body.m .g-row .t{font-size:13px;line-height:1.2}
+body.m .money-box .big{font-size:40px}
+body.m .stats{gap:18px 16px}
+body.m .stat .v{font-size:30px}
+body.m .stat .d{font-size:14px}
+body.m .princ{grid-template-columns:1fr;gap:20px}
+body.m .path{flex-direction:column}
+body.m .path div{margin:0;padding:12px 0}
+body.m .ask{font-size:24px;margin-top:20px}
+body.m #nav{left:16px;right:16px;bottom:0;height:64px;padding-bottom:16px;background:var(--wall);gap:10px}
+body.m #wall{gap:3px;height:16px}
+body.m #wall button span{display:none}
+body.m #count{min-width:38px}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage" role="region" aria-roledescription="presentación" aria-label="Mi Casa">
+
+<!-- 1 PORTADA -->
+<section class="slide cover" data-title="Portada">
+  <h1>Mi Casa</h1>
+  <div class="tag">Nombre provisional</div>
+  <p class="lead">Del “quiero construir un cuarto” a un proyecto que se puede cotizar, financiar y terminar.</p>
+  <div class="by"><b>TORUS.</b><br>Guatemala, octubre de 2026</div>
+  <svg class="house" viewBox="0 0 560 600" aria-hidden="true">
+    <!-- segundo nivel proyectado -->
+    <rect x="70" y="120" width="420" height="190" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-dasharray="10 8"/>
+    <rect x="300" y="175" width="80" height="70" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 6"/>
+    <!-- varillas esperando -->
+    <g stroke="var(--rosa)" stroke-width="5" stroke-linecap="round">
+      <line x1="84" y1="330" x2="84" y2="240"/><line x1="98" y1="330" x2="98" y2="252"/>
+      <line x1="272" y1="330" x2="272" y2="236"/><line x1="286" y1="330" x2="286" y2="250"/>
+      <line x1="462" y1="330" x2="462" y2="240"/><line x1="476" y1="330" x2="476" y2="254"/>
+    </g>
+    <!-- losa -->
+    <rect x="60" y="326" width="440" height="22" fill="var(--ink)"/>
+    <!-- muro de block -->
+    <g id="blockwall"></g>
+    <!-- puerta y ventana -->
+    <rect x="130" y="430" width="70" height="130" fill="var(--wall)"/>
+    <rect x="310" y="410" width="110" height="70" fill="var(--wall)"/>
+    <line x1="40" y1="562" x2="520" y2="562" stroke="var(--ink)" stroke-width="3"/>
+  </svg>
+</section>
+
+<!-- 2 PROBLEMA -->
+<section class="slide" data-title="El problema">
+  <h2>La casa que nunca se termina</h2>
+  <p class="lead">En Guatemala la vivienda se construye con remesas, pero sin plano, sin presupuesto y sin crédito. Por eso es lenta, cara y muchas veces queda inconclusa.</p>
+  <div class="stages">
+    <div class="stage"><svg viewBox="0 0 240 190" aria-hidden="true"><g class="mini" data-h="2"></g></svg><div class="cap">Llega un envío y se compra sin cotizar</div></div>
+    <div class="stage"><svg viewBox="0 0 240 190" aria-hidden="true"><g class="mini" data-h="4"></g></svg><div class="cap">El maestro de obra calcula a ojo</div></div>
+    <div class="stage"><svg viewBox="0 0 240 190" aria-hidden="true"><g class="mini" data-h="6" data-slab="1"></g></svg><div class="cap">Los costos crecen y el plan cambia sobre la marcha</div></div>
+    <div class="stage stop"><svg viewBox="0 0 240 190" aria-hidden="true"><g class="mini" data-h="6" data-slab="1" data-rebar="1"></g></svg><div class="cap">Se acaba el dinero y la obra se detiene</div></div>
+  </div>
+</section>
+
+<!-- 3 ACTORES -->
+<section class="slide" data-title="Cuatro actores">
+  <h2>Cuatro actores, un mismo problema</h2>
+  <div class="actors">
+    <div class="actor">
+      <svg viewBox="0 0 44 44"><path d="M6 22 22 8l16 14v16H6z" fill="none" stroke="var(--azul)" stroke-width="3"/><rect x="18" y="26" width="8" height="12" fill="var(--azul)"/></svg>
+      <h3>La familia</h3><p>Construye por etapas sin saber cuánto costará el total. Compra sin cotizar y la obra se detiene cuando se acaba el dinero.</p></div>
+    <div class="actor">
+      <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="15" fill="none" stroke="var(--azul)" stroke-width="3"/><path d="M7 22h30M22 7c6 5 6 25 0 30M22 7c-6 5-6 25 0 30" fill="none" stroke="var(--azul)" stroke-width="2"/></svg>
+      <h3>El migrante</h3><p>Envía dinero desde Estados Unidos sin poder ver en qué se gasta ni cuánto falta para terminar.</p></div>
+    <div class="actor">
+      <svg viewBox="0 0 44 44"><path d="M6 16 22 7l16 9H6z" fill="var(--azul)"/><g stroke="var(--azul)" stroke-width="3"><line x1="11" y1="19" x2="11" y2="33"/><line x1="22" y1="19" x2="22" y2="33"/><line x1="33" y1="19" x2="33" y2="33"/></g><rect x="6" y="35" width="32" height="3" fill="var(--azul)"/></svg>
+      <h3>La cooperativa</h3><p>Casi no presta para autoconstrucción: no hay presupuesto ni alcance confiable, y una obra inconclusa vale poco como garantía.</p></div>
+    <div class="actor">
+      <svg viewBox="0 0 44 44"><rect x="6" y="18" width="32" height="20" fill="none" stroke="var(--azul)" stroke-width="3"/><path d="M4 18 9 8h26l5 10" fill="none" stroke="var(--azul)" stroke-width="3"/><rect x="17" y="26" width="10" height="12" fill="var(--azul)"/></svg>
+      <h3>La ferretería</h3><p>Vende pedidos sueltos. No ve el proyecto completo ni cuánta demanda hay en su zona.</p></div>
+  </div>
+  <p class="unifier">Mi Casa convierte la intención de construir en un proyecto que todos pueden ver: la familia, quien envía el dinero, quien presta y quien vende.</p>
+</section>
+
+<!-- 4 IDIOMAS -->
+<section class="slide" data-title="Un país diverso">
+  <h2>Un mercado que no habla un solo idioma</h2>
+  <div class="row">
+    <div class="col">
+      <p class="lead" style="margin-bottom:26px">En Guatemala se hablan 22 idiomas mayas, además del xinka, el garífuna y el español. La vivienda rural se concentra donde el español no es la primera lengua.</p>
+      <p>Por eso Mi Casa se diseña con voz e imágenes, no solo con texto.</p>
+    </div>
+    <div class="col">
+      <div class="small" style="margin-bottom:10px">Hablantes por idioma, Censo 2018</div>
+      <div class="bars" id="langbars"></div>
+    </div>
+  </div>
+  <div class="src">Fuente: AGN con datos de la Academia de Lenguas Mayas de Guatemala y del INE, Censo 2018.</div>
+</section>
+
+<!-- 5 DÓNDE EMPEZAR -->
+<section class="slide" data-title="Dónde empezar">
+  <h2>Empezar donde la población crece y migra</h2>
+  <div class="small" style="margin-bottom:6px">Crecimiento poblacional 2008–2023, por departamento. La línea marca el promedio nacional (28.7%).</div>
+  <div class="bars" id="growbars" style="position:relative"></div>
+  <div class="src">Crecimiento: estimaciones y proyecciones del INE (CityPopulation). Migración: Censo 2018 (BID). Remesas: encuesta OIM 2022. Detenciones: La Hora, 2012–2019.</div>
+</section>
+
+<!-- 6 HUEHUETENANGO -->
+<section class="slide" data-title="Huehuetenango">
+  <h2>Huehuetenango y el corredor Mam</h2>
+  <div class="row" style="gap:56px">
+    <div class="col">
+      <div class="stats" style="grid-template-columns:1fr">
+        <div class="stat"><div class="v num">37.6%</div><div class="d">de crecimiento poblacional entre 2008 y 2023, contra 28.7% del país.</div></div>
+        <div class="stat"><div class="v">#1</div><div class="d">en tasa de migración internacional, según el Censo 2018.</div></div>
+        <div class="stat"><div class="v num">≈29%</div><div class="d">de las remesas se destina a inversión y ahorro, donde entra la vivienda.</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <p style="margin-bottom:22px">El Mam se habla en tres departamentos que, juntos, reúnen cerca de 27% de los receptores de remesas del país. Un mismo idioma abre la expansión al occidente.</p>
+      <div class="bars" id="mambars"></div>
+      <p class="small" style="margin-top:18px">Matices: Huehuetenango también habla Q’anjob’al, Jakalteko y Chuj, y el Mam tiene variantes regionales. El piloto se acota a dos o tres municipios.</p>
+    </div>
+  </div>
+  <div class="src">Fuentes: INE vía CityPopulation; BID, análisis del Censo 2018; OIM, Encuesta de Migración y Remesas 2022.</div>
+</section>
+
+<!-- 7 SOLUCIÓN -->
+<section class="slide" data-title="La solución">
+  <h2>El presupuesto como puente</h2>
+  <div class="row" style="gap:50px;align-items:center">
+    <div style="width:520px">
+      <p class="lead">La familia arma su presupuesto gratis. Ese presupuesto produce tres cosas que otros necesitan, y por las que pagan.</p>
+      <p class="small" style="margin-top:18px">Las cifras salen de una tabla de costos por tipología, sistema constructivo y región, no de estimaciones. Por eso son auditables frente a un banco.</p>
+    </div>
+    <svg viewBox="0 0 560 420" style="width:580px;height:430px" aria-label="El presupuesto conecta a la familia con ferreterías, cooperativas y especialistas">
+      <g font-size="15" fill="var(--ink)">
+        <rect x="20" y="175" width="150" height="70" rx="4" fill="var(--azul-t)" stroke="var(--azul)" stroke-width="2"/>
+        <text x="95" y="206" text-anchor="middle" font-weight="750" fill="var(--ink)">Familia</text><text x="95" y="226" text-anchor="middle" font-size="12.5" fill="var(--muted)">gratis</text>
+        <path d="M170 210h44" stroke="var(--ink)" stroke-width="2.5" marker-end="url(#ah)"/>
+        <rect x="220" y="170" width="140" height="80" rx="4" fill="var(--ink)"/>
+        <text x="290" y="206" text-anchor="middle" fill="var(--dark)" font-weight="800">Presupuesto</text><text x="290" y="226" text-anchor="middle" fill="var(--dark)" font-size="12.5">tipología · área · región</text>
+        <g stroke="var(--ink)" stroke-width="2.5" fill="none" marker-end="url(#ah)">
+          <path d="M360 195h12V70h14"/><path d="M360 210h26"/><path d="M360 225h12v125h14"/>
+        </g>
+        <g>
+          <rect x="390" y="38" width="168" height="64" rx="4" fill="var(--wall)" stroke="var(--line)" stroke-width="2"/>
+          <text x="402" y="64" font-weight="750">Ferretería</text><text x="402" y="84" font-size="12.5" fill="var(--muted)">lista de materiales</text>
+          <rect x="390" y="178" width="168" height="64" rx="4" fill="var(--wall)" stroke="var(--line)" stroke-width="2"/>
+          <text x="402" y="204" font-weight="750">Cooperativa</text><text x="402" y="224" font-size="12.5" fill="var(--muted)">solicitud precalificada</text>
+          <rect x="390" y="318" width="168" height="64" rx="4" fill="var(--wall)" stroke="var(--line)" stroke-width="2"/>
+          <text x="402" y="344" font-weight="750">Especialista</text><text x="402" y="364" font-size="12.5" fill="var(--muted)">alcance técnico</text>
+        </g>
+      </g>
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 10 5 0 10z" fill="var(--ink)"/></marker></defs>
+    </svg>
+  </div>
+</section>
+
+<!-- 8 MOCKUP -->
+<section class="slide" data-title="Cómo funciona">
+  <h2 style="margin-bottom:18px">Cómo viaja la información</h2>
+  <div class="mock">
+    <div>
+      <div class="phone" aria-live="polite">
+        <div class="ph-top"><div class="av"><svg width="18" height="18" viewBox="0 0 44 44"><path d="M6 22 22 8l16 14v16H6z" fill="var(--azul)"/></svg></div><div><b>Mi Casa</b><small>Asistente de presupuestos</small></div></div>
+        <div class="ph-body" id="screen"></div>
+      </div>
+    </div>
+    <div>
+      <div class="steps" id="steps"></div>
+      <p class="illu">Pantallas conceptuales. Montos y cantidades son ilustrativos, no una cotización.</p>
+    </div>
+    <div class="flow">
+      <svg viewBox="0 0 560 410" id="flowsvg" aria-label="Diagrama del flujo de información">
+        <g class="eg" data-e="in"><path d="M0 206H96" marker-end="url(#fa)"/><circle class="dot" r="5" cx="48" cy="206"/></g>
+        <g class="eg" data-e="out"><path d="M100 234H6" marker-end="url(#fa)"/><circle class="dot" r="5" cx="48" cy="234"/></g>
+        <g class="eg" data-e="precios"><path d="M360 50H322V198H304" marker-end="url(#fa)"/><circle class="dot" r="5" cx="322" cy="124"/></g>
+        <g class="eg" data-e="lista"><path d="M300 210H338V74H356" marker-end="url(#fa)"/><circle class="dot" r="5" cx="338" cy="142"/></g>
+        <g class="eg" data-e="coop"><path d="M300 222H356" marker-end="url(#fa)"/><circle class="dot" r="5" cx="328" cy="222"/></g>
+        <g class="eg" data-e="esp"><path d="M300 236H330V348H356" marker-end="url(#fa)"/><circle class="dot" r="5" cx="330" cy="292"/></g>
+        <g class="eg" data-e="mig"><path d="M0 348H96" marker-end="url(#fa)"/><circle class="dot" r="5" cx="48" cy="348"/></g>
+        <g class="nd core" data-n="motor"><rect x="100" y="185" width="200" height="70" rx="4"/><text x="200" y="216" text-anchor="middle">Motor de costos</text><text class="sub" x="200" y="236" text-anchor="middle">tabla TORUS por región</text></g>
+        <g class="nd" data-n="ferr"><rect x="360" y="24" width="190" height="64" rx="4"/><text x="374" y="51">Ferreterías</text><text class="sub" x="374" y="71">precios y cotizaciones</text></g>
+        <g class="nd" data-n="coop"><rect x="360" y="190" width="190" height="64" rx="4"/><text x="374" y="217">Cooperativa</text><text class="sub" x="374" y="237">solicitud precalificada</text></g>
+        <g class="nd" data-n="esp"><rect x="360" y="316" width="190" height="64" rx="4"/><text x="374" y="343">Especialistas</text><text class="sub" x="374" y="363">alcance técnico</text></g>
+        <g class="nd" data-n="mig"><rect x="100" y="316" width="200" height="64" rx="4"/><text x="114" y="343">Familiar en EE. UU.</text><text class="sub" x="114" y="363">enlace de seguimiento</text></g>
+        <text x="0" y="192" font-size="12.5" fill="var(--muted)">Teléfono</text>
+        <defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 10 5 0 10z" fill="var(--azul)"/></marker></defs>
+      </svg>
+      <div class="caption" id="caption"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 MODELO -->
+<section class="slide" data-title="Modelo de ingresos">
+  <h2>Quién paga, y por qué</h2>
+  <table class="grid">
+    <thead><tr><th>Lado</th><th>Qué recibe</th><th>Cómo paga</th><th>Métrica clave</th><th>Fase</th></tr></thead>
+    <tbody>
+      <tr><td>Familia</td><td>Presupuesto, lista de materiales, opciones de crédito, profesionales verificados</td><td>Gratis</td><td>Presupuestos completados por semana</td><td>0–1</td></tr>
+      <tr><td>Ferretería</td><td>Demanda calificada por zona y cotizaciones de listas completas</td><td>Gratis al inicio; luego por cotización aceptada o pedido, y datos de demanda</td><td>Listas cotizadas y conversión</td><td>0–1 gratis, 3 cobro</td></tr>
+      <tr><td>Cooperativa</td><td>Solicitantes precalificados con presupuesto, alcance y perfil</td><td>Fee por solicitud precalificada</td><td>Solicitudes enviadas y aprobadas</td><td>2</td></tr>
+      <tr><td>Especialista</td><td>Encargos con alcance definido y reputación verificable</td><td>Membresía o fee por lead; pago retenido hasta la entrega</td><td>Encargos cerrados y calificación</td><td>3</td></tr>
+    </tbody>
+  </table>
+  <p class="small" style="margin-top:20px;max-width:90ch">Las ferreterías también son la fuente de precios vigentes: sin ellas, el presupuesto de la familia pierde confiabilidad.</p>
+</section>
+
+<!-- 10 FASES -->
+<section class="slide" data-title="Fases">
+  <h2>Un lado a la vez</h2>
+  <div class="phases">
+    <div class="phase"><div class="bk">0</div><h3>Validación</h3><p>WhatsApp atendido por una persona, hoja de costos de TORUS, una región piloto en español y Mam.</p><div class="gate">Puerta: las familias completan presupuestos y una cooperativa acepta recibir leads.</div></div>
+    <div class="phase"><div class="bk">1</div><h3>Producto base</h3><p>Web app y bot de WhatsApp sobre el motor de costos. Ferreterías alimentan precios.</p><div class="gate">Puerta: volumen sostenido de presupuestos con precios vigentes.</div></div>
+    <div class="phase money"><div class="bk">2</div><h3>Marketplace financiero</h3><p>Solicitudes precalificadas a bancos y cooperativas. Primer ingreso recurrente.</p><div class="gate">Puerta: al menos una institución pagando por solicitud.</div></div>
+    <div class="phase"><div class="bk">3</div><h3>Marketplace completo</h3><p>Especialistas verificados, pago retenido hasta la entrega, cobro a ferreterías y nuevas regiones.</p></div>
+  </div>
+</section>
+
+<!-- 11 PILOTO -->
+<section class="slide" data-title="El piloto">
+  <h2>El piloto: 16 semanas en Huehuetenango</h2>
+  <div class="row" style="gap:56px">
+    <div style="flex:1.5">
+      <div class="gantt" id="gantt"></div>
+      <p class="small" style="margin-top:14px">El acuerdo con la cooperativa arranca en la semana 1: es la ruta crítica.</p>
+    </div>
+    <div class="money-box" style="flex:1">
+      <div class="small">Costo estimado de la fase 0</div>
+      <div class="big num">USD 10–18k</div>
+      <div class="small" style="margin-top:6px">Unos Q77,000 a Q140,000. Cifras aproximadas.</div>
+      <ul class="num">
+        <li><span>Operación bilingüe Mam-español</span><span>2.6–3.6k</span></li>
+        <li><span>Desarrollo low-code</span><span>2.0–4.8k</span></li>
+        <li><span>Traducción y audios en Mam</span><span>0.8–1.5k</span></li>
+        <li><span>Ilustraciones y co-diseño</span><span>1.1–2.4k</span></li>
+        <li><span>Legal, viajes, herramientas</span><span>1.8–3.6k</span></li>
+        <li><span>Contingencia 15%</span><span>1.2–2.4k</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 12 ADQUISICIÓN -->
+<section class="slide" data-title="Adquisición">
+  <h2>Cómo llegamos a las familias</h2>
+  <div class="row" style="gap:60px">
+    <div class="col">
+      <div class="stats">
+        <div class="stat"><div class="v num">20.6M</div><div class="d">conexiones móviles, 110% de la población</div></div>
+        <div class="stat"><div class="v num">62%</div><div class="d">de la población usa internet</div></div>
+        <div class="stat warn"><div class="v num">14.5%</div><div class="d">de las personas en el área rural reportaba acceso a internet (2022)</div></div>
+        <div class="stat"><div class="v num">81.5%</div><div class="d">de los hogares de Huehuetenango tiene celular</div></div>
+      </div>
+      <p class="small" style="margin-top:22px">Las cifras nacionales sobrestiman el alcance rural: WhatsApp y las llamadas llegan; las redes, no necesariamente.</p>
+    </div>
+    <div class="col">
+      <ol class="ch">
+        <li><b>Anuncios locales</b>Facebook y TikTok segmentados a los municipios piloto, con botón directo a WhatsApp.</li>
+        <li><b>El migrante</b>Anuncios a guatemaltecos en Estados Unidos: construir la casa de su familia sabiendo en qué se gasta cada quetzal.</li>
+        <li><b>Canal físico</b>Mostrador de la ferretería, la cooperativa y, posiblemente, radio comunitaria en Mam.</li>
+      </ol>
+      <p class="callout">La métrica que decide: costo por presupuesto completado en cada canal.</p>
+    </div>
+  </div>
+  <div class="src">Fuentes: DataReportal, Digital 2026: Guatemala; Bloomberg Línea (2022); PDC, perfil departamental de Huehuetenango.</div>
+</section>
+
+<!-- 13 INCLUSIÓN -->
+<section class="slide" data-title="Inclusión">
+  <h2>Inclusión desde el diseño</h2>
+  <div class="princ">
+    <div><h3>Voz antes que texto</h3><p>Audios grabados por hablantes nativos en cada paso. Resuelve también la barrera de alfabetización.</p></div>
+    <div><h3>Imágenes antes que palabras</h3><p>El presupuesto se arma tocando dibujos, en quetzales y en las unidades que la gente ya usa: bloques, láminas, quintales.</p></div>
+    <div><h3>Dos idiomas, no veintidós</h3><p>Español y Mam en el piloto. Traducción profesional, nunca automática, y una arquitectura que suma idiomas sin reprogramar.</p></div>
+    <div><h3>Un canal humano</h3><p>El ferretero del pueblo y la cooperativa local acompañan a la familia. Ambos ganan cuando la familia completa el proceso.</p></div>
+  </div>
+</section>
+
+<!-- 14 SIGUIENTES PASOS -->
+<section class="slide" data-title="Siguientes pasos">
+  <h2>Siguientes pasos</h2>
+  <div class="path">
+    <div class="now"><b>Paso 1</b><span>Validar el dolor: entrevistas con familias, migrantes, cooperativas y ferreterías</span></div>
+    <div><b>Paso 2</b><span>Completar la radiografía de datos del mercado</span></div>
+    <div><b>Paso 3</b><span>Prototipo de pantallas y motor de costos</span></div>
+    <div><b>Paso 4</b><span>Fase 0 con recursos propios y aliados locales</span></div>
+    <div><b>Paso 5</b><span>BID Lab para la fase 1 y el corredor Mam, con socio implementador</span></div>
+  </div>
+  <p class="ask">Buscamos una cooperativa aliada para el piloto en Huehuetenango.</p>
+  <p class="small" style="margin-top:14px">Alejandro Biguria, TORUS.</p>
+</section>
+
+<nav id="nav" aria-label="Navegación de láminas">
+  <button class="arrow" id="prev" aria-label="Lámina anterior"><svg viewBox="0 0 14 14"><path d="M9 2 4 7l5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+  <div id="wall"></div>
+  <button class="arrow" id="next" aria-label="Lámina siguiente"><svg viewBox="0 0 14 14"><path d="m5 2 5 5-5 5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+  <div id="count" class="num"></div>
+</nav>
+</div></div>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+
+/* ---- escalado al contenedor (iframe de Wix o ventana) ---- */
+const stage=$('#stage');
+/* Llena el ancho del marco: la lámina se estira entre 16:9 y 16:12 sin deformarse.
+   Por debajo de 720 px de ancho (celular) cambia a un modo con scroll vertical. */
+function fit(){
+  const W=innerWidth,H=innerHeight;
+  if(W<720){document.body.classList.add('m');stage.style.width='';stage.style.height='';stage.style.transform='';return;}
+  document.body.classList.remove('m');
+  let s,sw=1280,sh=720;
+  if(W/H>=16/9){s=H/720;sw=Math.min(W/s,1600);}
+  else{s=W/1280;sh=Math.min(H/s,960);}
+  stage.style.width=sw+'px';stage.style.height=sh+'px';stage.style.transform='scale('+s+')';
+}
+addEventListener('resize',fit);fit();
+
+/* ---- muro de block de la portada ---- */
+const bw=$('#blockwall');
+for(let r=0;r<10;r++){const y=350+r*21,off=r%2?-30:0;for(let x=60+off;x<500;x+=60){const x0=Math.max(x,60),x1=Math.min(x+56,500);if(x1-x0>4)el('rect',{x:x0,y:y,width:x1-x0,height:17,fill:'var(--block)'},bw);}}
+
+/* ---- casas por etapas (lámina 2) ---- */
+$$('.mini').forEach(g=>{
+  const h=+g.dataset.h;
+  for(let r=0;r<h;r++){const y=170-(r+1)*15,off=r%2?-14:0;for(let x=30+off;x<210;x+=28){const x0=Math.max(x,30),x1=Math.min(x+25,210);if(x1-x0>3)el('rect',{x:x0,y:y,width:x1-x0,height:12,fill:'var(--block)'},g);}}
+  el('line',{x1:10,y1:172,x2:230,y2:172,stroke:'var(--ink)','stroke-width':2.5},g);
+  if(g.dataset.slab){const y=170-h*15-10;el('rect',{x:24,y:y,width:192,height:10,fill:'var(--ink)'},g);
+    if(g.dataset.rebar){[34,46,114,126,194,206].forEach(x=>el('line',{x1:x,y1:y,x2:x,y2:y-44,stroke:'var(--rosa)','stroke-width':3.5,'stroke-linecap':'round'},g));}}
+});
+
+/* ---- barras ---- */
+function bars(target,rows,max,opts={}){
+  const box=$(target);
+  rows.forEach(r=>{
+    const d=document.createElement('div');d.className='bar'+(r.hi?' hi':'');
+    d.innerHTML='<div class="lbl">'+r.name+'</div><div class="trk"><div class="fill" style="width:'+(r.v/max*100)+'%"></div></div><div class="val num">'+(opts.fmt?opts.fmt(r.v):r.v)+'</div>'+(r.note?'<div class="note">'+r.note+'</div>':'');
+    box.appendChild(d);
+  });
+  if(opts.ref!=null){box.querySelectorAll('.trk').forEach(t=>{const l=document.createElement('div');l.style.cssText='position:absolute;top:-12px;bottom:-12px;left:'+(opts.ref/max*100)+'%;border-left:2px dashed var(--ink)';t.appendChild(l);});}
+}
+const es=v=>v.toLocaleString('es-GT');
+bars('#langbars',[
+  {name:'K’iche’',v:1680551},{name:'Q’eqchi’',v:1370007},{name:'Kaqchikel',v:1068356},{name:'Mam',v:842252,hi:1}
+],1680551,{fmt:es});
+bars('#growbars',[
+  {name:'Alta Verapaz',v:38.7,note:'Menor tasa de migración internacional del país'},
+  {name:'Huehuetenango',v:37.6,hi:1,note:'Mayor tasa de migración internacional; 9.0% de los receptores de remesas'},
+  {name:'Quiché',v:30.0},
+  {name:'San Marcos',v:28.7,note:'10.2% de los receptores de remesas'},
+  {name:'Quetzaltenango',v:27.0,note:'7.7% de los receptores de remesas'},
+  {name:'Totonicapán',v:17.1},
+  {name:'Petén',v:13.5}
+],40,{fmt:v=>v.toFixed(1)+'%',ref:28.7});
+bars('#mambars',[
+  {name:'San Marcos',v:10.2},{name:'Huehuetenango',v:9.0,hi:1},{name:'Quetzaltenango',v:7.7}
+],12,{fmt:v=>v.toFixed(1)+'%'});
+$('#mambars').insertAdjacentHTML('beforebegin','<div class="small" style="margin-bottom:6px">Porcentaje de los receptores de remesas del país</div>');
+
+/* ---- gantt ---- */
+const G=[['Verificación WhatsApp',1,2],['Acuerdo con cooperativa',1,8,'hi'],['Preparación',1,4],['Construcción ligera',3,6],['Prueba controlada',7,8],['Familias reales usando',8,8,'ms'],['Piloto en operación',9,16],['Evaluación de la puerta',16,16,'ms']];
+const gt=$('#gantt');
+let ax='<div class="g-ax"><div></div><div class="tk">';for(let w=0;w<=16;w+=4)ax+='<span style="left:'+(w/16*100)+'%">Sem '+w+'</span>';ax+='</div></div>';
+gt.insertAdjacentHTML('beforeend',ax);
+G.forEach(([t,s,e,c])=>{const left=(s-1)/16*100,wd=(e-s+1)/16*100;const ms=c==='ms';
+  gt.insertAdjacentHTML('beforeend','<div class="g-row '+(c||'')+'"><div class="t">'+t+'</div><div class="tr"><div class="b" style="left:'+(ms?e/16*100:left)+'%;width:'+wd+'%"></div></div></div>');});
+
+/* ---- mockup interactivo ---- */
+const tile=(t,sel,svg)=>'<div class="tile'+(sel?' sel':'')+'">'+svg+t+'</div>';
+const ic={
+  cuarto:'<svg viewBox="0 0 34 28"><rect x="4" y="8" width="26" height="18" fill="none" stroke="currentColor" stroke-width="2"/><rect x="12" y="14" width="7" height="12" fill="currentColor"/></svg>',
+  bano:'<svg viewBox="0 0 34 28"><rect x="6" y="14" width="22" height="9" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 14V6h6" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  cocina:'<svg viewBox="0 0 34 28"><rect x="5" y="10" width="24" height="15" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="17" r="3" fill="currentColor"/><circle cx="22" cy="17" r="3" fill="currentColor"/></svg>',
+  nivel:'<svg viewBox="0 0 34 28"><rect x="6" y="15" width="22" height="11" fill="currentColor"/><rect x="6" y="3" width="22" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 2"/></svg>',
+  muro:'<svg viewBox="0 0 34 28"><g fill="currentColor"><rect x="3" y="18" width="13" height="7"/><rect x="18" y="18" width="13" height="7"/><rect x="10" y="9" width="13" height="7"/></g></svg>',
+  techo:'<svg viewBox="0 0 34 28"><path d="M3 15 17 5l14 10" fill="none" stroke="currentColor" stroke-width="2.5"/><rect x="7" y="15" width="20" height="10" fill="none" stroke="currentColor" stroke-width="2"/></svg>'
+};
+const audio='<div class="audio"><i><svg width="9" height="10" viewBox="0 0 9 10"><path d="M0 0 9 5 0 10z" fill="#fff"/></svg></i><span>Escuchar en Mam</span><div class="wave"></div></div>';
+const STEPS=[
+ {t:'Elige qué construir',on:{e:['in'],n:['motor']},
+  cap:['La familia elige con dibujos','Toca lo que quiere construir. Cada pantalla tiene un audio en Mam, así que no depende de leer. La tipología viaja al motor de costos.'],
+  scr:'<div class="msg">Hola. Te ayudo a saber cuánto cuesta construir. ¿Qué quieres hacer?</div><div class="msg">'+audio+'</div><div class="tiles">'+tile('Cuarto',1,ic.cuarto)+tile('Baño',0,ic.bano)+tile('Cocina',0,ic.cocina)+tile('Segundo nivel',0,ic.nivel)+tile('Muro',0,ic.muro)+tile('Techo',0,ic.techo)+'</div>'},
+ {t:'Define tamaño y sistema',on:{e:['in','precios'],n:['motor','ferr']},
+  cap:['Tamaño, sistema y municipio','La familia elige medidas y sistema constructivo. El motor cruza esa información con los precios vigentes que reportan las ferreterías del municipio.'],
+  scr:'<div class="msg me">Cuarto</div><div class="msg">¿De qué tamaño?</div><div class="chips"><span class="chip">3 × 3 m</span><span class="chip sel">3 × 4 m</span><span class="chip">4 × 4 m</span></div><div class="msg">¿Cómo lo quieres construir?</div><div class="chips"><span class="chip sel">Block y losa</span><span class="chip">Block y lámina</span></div><div class="msg">'+audio+'</div><div class="msg">Municipio: <b>Chiantla, Huehuetenango</b></div>'},
+ {t:'Recibe su presupuesto',on:{e:['out'],n:['motor']},
+  cap:['Un presupuesto que se puede revisar','El motor devuelve el total, la lista de materiales en unidades conocidas y la fecha de los precios. Nada sale de una estimación libre.'],
+  scr:'<div class="msg">Tu cuarto de 3 × 4 m con block y losa cuesta aproximadamente:</div><div class="msg"><div class="total num">Q 31,400</div><div class="small" style="font-size:11px">Precios de esta semana en Chiantla</div><table class="lines num" style="margin-top:6px"><tr><td>Block (440 u.)</td><td>Q 2,860</td></tr><tr><td>Cemento (32 sacos)</td><td>Q 2,750</td></tr><tr><td>Hierro y alambre</td><td>Q 5,900</td></tr><tr><td>Arena y piedrín</td><td>Q 2,400</td></tr><tr><td>Otros materiales</td><td>Q 8,490</td></tr><tr><td>Mano de obra</td><td>Q 9,000</td></tr></table></div><div class="msg">'+audio+'</div>'},
+ {t:'Elige cómo avanzar',on:{e:['lista','coop','esp'],n:['motor','ferr','coop','esp']},
+  cap:['El presupuesto se convierte en tres leads','La lista de materiales va a las ferreterías para cotizar. El monto va a la cooperativa como solicitud precalificada. El alcance va a un especialista verificado.'],
+  scr:'<div class="msg">¿Qué quieres hacer ahora?</div><button class="btn fill" tabindex="-1">Cotizar materiales</button><button class="btn" tabindex="-1">Ver opciones de crédito</button><button class="btn" tabindex="-1">Buscar un especialista</button><button class="btn" tabindex="-1">Compartir con mi familia</button><div class="msg">'+audio+'</div>'},
+ {t:'Comparte con su familiar',on:{e:['mig'],n:['mig']},
+  cap:['Quien envía el dinero también ve la obra','El familiar en Estados Unidos recibe un enlace con el presupuesto y el avance. Sabe en qué se gasta cada quetzal y cuánto falta.'],
+  scr:'<div class="msg me">Compartir con mi familia</div><div class="msg">Listo. Tu hijo Mario recibió el enlace del presupuesto.</div><div class="msg"><b>Avance de la obra</b><div style="height:8px;background:#EEF1EE;border-radius:4px;margin:6px 0"><div style="width:35%;height:100%;background:var(--azul);border-radius:4px"></div></div><div style="font-size:11.5px">Cimientos y muros: listos<br>Losa: falta Q 12,300</div></div><div class="msg">'+audio+'</div>'}
+];
+const stepsBox=$('#steps');
+STEPS.forEach((s,i)=>{const b=document.createElement('button');b.className='step';b.innerHTML='<b>Paso '+(i+1)+'</b><span>'+s.t+'</span>';b.onclick=()=>show(i);stepsBox.appendChild(b);});
+let cur=0;
+function show(i){
+  cur=i;const s=STEPS[i];
+  $$('.step').forEach((b,j)=>{b.classList.toggle('on',j===i);b.setAttribute('aria-pressed',j===i);});
+  $('#screen').innerHTML=s.scr;
+  $$('.flow .eg').forEach(g=>g.classList.toggle('on',s.on.e.includes(g.dataset.e)));
+  $$('.flow .nd:not(.core)').forEach(g=>g.classList.toggle('on',s.on.n.includes(g.dataset.n)));
+  $('#caption').innerHTML='<h4>'+s.cap[0]+'</h4><p>'+s.cap[1]+'</p>';
+}
+show(0);
+/* puntos que recorren las conexiones activas */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduce){let t0=performance.now();(function tick(now){const p=((now-t0)%1600)/1600;
+  $$('.flow .eg.on').forEach(g=>{const path=g.querySelector('path'),dot=g.querySelector('.dot');const L=path.getTotalLength(),pt=path.getPointAtLength(p*L);dot.setAttribute('cx',pt.x);dot.setAttribute('cy',pt.y);});
+  requestAnimationFrame(tick);})(t0);}
+
+/* ---- navegación ---- */
+const slides=$$('.slide'),wall=$('#wall');let idx=0;
+slides.forEach((s,i)=>{const b=document.createElement('button');b.setAttribute('aria-label',(i+1)+'. '+s.dataset.title);b.innerHTML='<span>'+s.dataset.title+'</span>';b.onclick=()=>go(i);wall.appendChild(b);});
+function go(i){idx=Math.max(0,Math.min(slides.length-1,i));slides[idx].scrollTop=0;
+  slides.forEach((s,j)=>s.classList.toggle('on',j===idx));
+  [...wall.children].forEach((b,j)=>{b.classList.toggle('cur',j===idx);b.classList.toggle('done',j<idx);b.setAttribute('aria-current',j===idx?'step':'false');});
+  $('#count').textContent=(idx+1)+' / '+slides.length;
+  try{history.replaceState(null,'','#'+(idx+1));}catch(e){}
+}
+$('#prev').onclick=()=>go(idx-1);$('#next').onclick=()=>go(idx+1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown')go(idx+1);if(e.key==='ArrowLeft'||e.key==='PageUp')go(idx-1);
+  if(slides[idx].dataset.title==='Cómo funciona'){if(e.key==='ArrowDown')show(Math.min(STEPS.length-1,cur+1));if(e.key==='ArrowUp')show(Math.max(0,cur-1));}});
+let tx=null,ty=null;addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+addEventListener('touchend',e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5)go(idx+(dx<0?1:-1));tx=null;});
+const h=parseInt((location.hash||'').slice(1),10);go(isNaN(h)?0:h-1);
+})();
+</script>
+</body>
+</html>
